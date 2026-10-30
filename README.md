@@ -22,6 +22,14 @@ A low-cost, offline-first, two-node system:
 
 ## Running the App
 
+### GitHub Pages
+
+The app is published from the `main` branch at:
+
+https://subhadeepdebnath66.github.io/aeris-sentinel/
+
+Changes pushed to `main` are published automatically by GitHub Pages.
+
 ### Option 1 — Direct file (simplest)
 
 Just open `index.html` in any modern browser:
