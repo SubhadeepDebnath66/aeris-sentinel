@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Backlog Champions — SIH 2026 PS26178 Digital Twin</title>
+  <meta name="description" content="Digital twin simulation for the Backlog Champions SIH 2026 project — offline-first two-node disaster-response system for hillside infrastructure monitoring." />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       HEADER
+  ════════════════════════════════════════════════════════════════ -->
+  <header>
+    <div class="header-left">
+      <div class="logo-mark">BC</div>
+      <div class="header-title">
+        <h1>Backlog Champions — SIH 2026</h1>
+        <span class="subtitle">PS26178 · Two-Node Hillside Disaster-Response System · Digital Twin</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="sim-badge">⚠ SIMULATION MODE</span>
+      <span id="sim-clock">--:--:--</span>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SUBHEADER & TAB NAVIGATION
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="sub-header-bar">
+    <div class="nav-tabs">
+      <button id="tab-btn-twin" class="tab-btn active">
+        <span>🌐</span> Digital Twin Simulation
+      </button>
+      <button id="tab-btn-proof" class="tab-btn">
+        <span>🛡️</span> Three-Pillar Proof Environment
+        <span class="tab-badge">13-Step Automated Verification</span>
+      </button>
+    </div>
+    <div class="sub-header-meta">
+      <span class="status-indicator-pill"><span class="pulse-dot"></span> SIMULATION MODE</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       MAIN
+  ════════════════════════════════════════════════════════════════ -->
+  <main>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         TAB 1: DIGITAL TWIN SIMULATION (Preserved existing view)
+    ────────────────────────────────────────────────────────────── -->
+    <div id="view-digital-twin" class="view-section active">
+
+    <!-- ── Scenario controls ──────────────────────────────────── -->
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; padding:0 2px;">
+      <div class="btn-row">
+        <button class="btn-primary" id="btn-start">▶ Start</button>
+        <button class="btn-ghost"   id="btn-pause" disabled>⏸ Pause</button>
+        <button class="btn-ghost"   id="btn-reset">↺ Reset</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn-warn"    id="btn-inject-slope">⚡ Inject Slope Event</button>
+        <button class="btn-warn"    id="btn-inject-water">💧 Inject Water Contact</button>
+        <button class="btn-ghost"   id="btn-inject-spike">〜 Sensor Spike</button>
+        <button class="btn-danger"  id="btn-power-a">🔌 Power Cut A (5s)</button>
+        <button class="btn-danger"  id="btn-power-b">🔌 Power Cut B (5s)</button>
+        <button class="btn-green"   id="btn-begin-recovery">⬆ Begin Recovery</button>
+        <button class="btn-green"   id="btn-confirm-recovery">✔ Confirm Recovery</button>
+      </div>
+    </div>
+
+    <!-- ── Nodes row ──────────────────────────────────────────── -->
+    <div class="nodes-row">
+
+      <!-- ──── Node A ──────────────────────────────────────────── -->
+      <div class="panel" id="node-a-panel">
+        <div class="panel-header">
+          <span class="panel-title">Node A — Slope Monitor (ESP32)</span>
+          <span class="flex-center gap-6">
+            <span id="na-power" class="power-label ok">ONLINE</span>
+            <span id="na-state" class="state-chip idle">IDLE</span>
+          </span>
+        </div>
+        <div class="panel-body">
+
+          <!-- Illustration -->
+          <div class="node-illus">
+            <div class="node-box" id="na-box">
+              <span class="node-box-label">NODE A</span>
+              <div class="node-pin top-right"></div>
+              <div class="node-pin bottom-right" style="background:var(--amber)"></div>
+            </div>
+          </div>
+
+          <!-- Sensor reading -->
+          <div>
+            <div class="section-label">Slope Displacement Sensor (SIMULATED)</div>
+            <div class="data-row" style="margin-bottom:4px;">
+              <span class="data-label">Reading</span>
+              <span class="data-val mono text-cyan" id="na-sensor">0.0 mm</span>
+            </div>
+            <div class="data-row">
+              <div class="meter-wrap" id="na-meter">
+                <div class="meter-fill normal" style="width:0%"></div>
+                <div class="meter-threshold" style="left:58%"></div>
+                <span class="meter-label">0.0</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Confirmation -->
+          <div>
+            <div class="section-label">Confirmation Window</div>
+            <div class="data-row">
+              <span class="data-label">Above-threshold count</span>
+              <span class="data-val" id="na-confirm">0/5</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Noisy readings</span>
+              <span class="data-val" id="na-noisy">OFF</span>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Outputs -->
+          <div>
+            <div class="section-label">Local Outputs</div>
+            <div class="data-row">
+              <div class="led-row"><div class="led off" id="na-alert-led"></div><span class="led-label">Alert LED</span></div>
+              <div class="led-row"><div class="led off" id="na-buzzer-led"></div><span class="led-label">Buzzer</span></div>
+            </div>
+          </div>
+
+          <!-- Fault injection toggles -->
+          <div class="divider"></div>
+          <div>
+            <div class="section-label">Fault Injection</div>
+            <label class="toggle-label">
+              <span>Noisy Readings (±20%)</span>
+              <input type="checkbox" class="toggle" id="toggle-noisy" />
+            </label>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ──── Wireless link ────────────────────────────────────── -->
+      <div class="link-panel">
+        <span class="link-title">Wireless Link</span>
+
+        <div class="link-svg-wrap">
+          <svg id="link-svg" viewBox="0 0 200 60" preserveAspectRatio="none">
+            <!-- dashed background path -->
+            <path id="link-path-bg" class="link-path-bg" d="M 10,30 C 50,10 150,50 190,30" />
+            <!-- animated dashes on top -->
+            <path class="link-path-active" d="M 10,30 C 50,10 150,50 190,30" />
+            <!-- Node dots -->
+            <circle cx="10" cy="30" r="5" fill="var(--cyan)" opacity="0.7"/>
+            <circle cx="190" cy="30" r="5" fill="var(--cyan)" opacity="0.7"/>
+            <!-- The path used for packet animation -->
+            <path id="link-path" fill="none" stroke="none" d="M 10,30 C 50,10 150,50 190,30" />
+          </svg>
+        </div>
+
+        <!-- Health bar -->
+        <div class="hbar-wrap" style="width:100%;">
+          <div class="hbar-fill ok" id="link-hbar" style="width:100%;"></div>
+        </div>
+        <span class="peer-badge ok" id="peer-status">CONNECTED</span>
+
+        <!-- Stats -->
+        <div class="link-stats">
+          <div class="link-row">
+            <span class="link-key">Health</span>
+            <span class="link-val ok" id="link-health">100%</span>
+          </div>
+          <div class="link-row">
+            <span class="link-key">Loss</span>
+            <span class="link-val" id="link-loss">0%</span>
+          </div>
+          <div class="link-row">
+            <span class="link-key">Latency</span>
+            <span class="link-val" id="link-latency">0 ms</span>
+          </div>
+          <div class="link-row">
+            <span class="link-key">Seq#</span>
+            <span class="link-val" id="link-seq">0</span>
+          </div>
+          <div class="link-row">
+            <span class="link-key">Retries</span>
+            <span class="link-val" id="link-retries">0</span>
+          </div>
+          <div class="link-row">
+            <span class="link-key">Drops</span>
+            <span class="link-val" id="link-drops">0</span>
+          </div>
+        </div>
+
+        <!-- Link fault injection -->
+        <div style="width:100%; display:flex; flex-direction:column; gap:8px;">
+          <div class="ctrl-group-title">Fault Injection</div>
+          <div class="slider-row">
+            <span class="link-key" style="white-space:nowrap">Pkt Loss</span>
+            <input type="range" id="slider-loss" min="0" max="100" value="0" />
+            <span class="slider-val" id="loss-val">0%</span>
+          </div>
+          <label class="toggle-label">
+            <span style="font-size:11px; color:var(--text-dim);">Delayed ACK</span>
+            <input type="checkbox" class="toggle" id="toggle-delay-ack" />
+          </label>
+          <label class="toggle-label">
+            <span style="font-size:11px; color:var(--text-dim);">Peer Disconnect</span>
+            <input type="checkbox" class="toggle" id="toggle-peer-disconnect" />
+          </label>
+        </div>
+      </div>
+
+      <!-- ──── Node B ──────────────────────────────────────────── -->
+      <div class="panel" id="node-b-panel">
+        <div class="panel-header">
+          <span class="panel-title">Node B — Relay Controller (ESP32)</span>
+          <span class="flex-center gap-6">
+            <span id="nb-power" class="power-label ok">ONLINE</span>
+            <span id="nb-state" class="state-chip idle">IDLE</span>
+          </span>
+        </div>
+        <div class="panel-body">
+
+          <!-- Illustration -->
+          <div class="node-illus">
+            <div class="node-box" id="nb-box">
+              <span class="node-box-label">NODE B</span>
+              <div class="node-pin top-right" style="background:var(--green)"></div>
+              <div class="node-pin bottom-right"></div>
+            </div>
+          </div>
+
+          <!-- Sensor -->
+          <div>
+            <div class="section-label">Water-Contact Sensor (SIMULATED)</div>
+            <div class="data-row" style="margin-bottom:4px;">
+              <span class="data-label">Moisture</span>
+              <span class="data-val mono text-cyan" id="nb-sensor">0.0 %</span>
+            </div>
+            <div class="data-row">
+              <div class="meter-wrap" id="nb-meter">
+                <div class="meter-fill normal" style="width:0%"></div>
+                <div class="meter-threshold" style="left:60%"></div>
+                <span class="meter-label">0.0</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Relay outputs -->
+          <div>
+            <div class="section-label">Relay Channels &amp; Outputs</div>
+            <div class="data-row">
+              <div class="led-row"><div class="led off" id="nb-relay1"></div><span class="led-label">Relay CH1 – Siren Power</span></div>
+            </div>
+            <div class="data-row">
+              <div class="led-row"><div class="led off" id="nb-relay2"></div><span class="led-label">Relay CH2 – Barrier Actuator</span></div>
+            </div>
+            <div class="data-row">
+              <div class="led-row"><div class="led off" id="nb-fan"></div><span class="led-label">Fan</span></div>
+              <div class="led-row"><div class="led off" id="nb-lamp"></div><span class="led-label">Lamp</span></div>
+            </div>
+            <div class="data-row">
+              <div class="led-row"><div class="led off" id="nb-buzzer-led"></div><span class="led-label">Buzzer</span></div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Zone LEDs -->
+          <div>
+            <div class="section-label">Zone Alert LEDs</div>
+            <div class="data-row">
+              <div class="led-row"><div class="led off" id="nb-zled-up"></div><span class="led-label">Upstream Zone</span></div>
+              <div class="led-row"><div class="led off" id="nb-zled-down"></div><span class="led-label">Downstream Zone</span></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /.nodes-row -->
+
+    <!-- ── Zone map ───────────────────────────────────────────── -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Zone Map — Affected &amp; Unaffected Areas</span>
+        <span style="font-size:10px; color:var(--text-dim); font-family:var(--mono);">
+          Safe Zone C is permanently protected and will never change state
+        </span>
+      </div>
+      <div class="zone-section" style="padding:14px;">
+        <div class="zone-grid">
+          <div class="zone-card normal" id="zone-upstream">
+            <div class="zone-name">🏔 Upstream Zone A</div>
+            <div class="zone-badge">NORMAL</div>
+            <div class="zone-desc">Slope monitoring area — affected when Node A confirms hazard</div>
+          </div>
+          <div class="zone-card normal" id="zone-downstream">
+            <div class="zone-name">🌊 Downstream Zone B</div>
+            <div class="zone-badge">NORMAL</div>
+            <div class="zone-desc">Valley area — affected simultaneously with upstream on DANGER confirmation</div>
+          </div>
+          <div class="zone-card safe" id="zone-safe">
+            <div class="zone-name">🛡 Safe Zone C</div>
+            <div class="zone-badge">SAFE</div>
+            <div class="zone-desc">Designated refuge — state is <strong>immutable</strong> regardless of sensor readings</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Bottom: Metrics + Timeline ────────────────────────── -->
+    <div class="bottom-row">
+
+      <!-- Metrics -->
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Communication Metrics</span>
+            <span style="font-size:10px; color:var(--text-dim);">All values are simulated</span>
+          </div>
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <span class="metric-val" id="m-tx">0</span>
+              <span class="metric-label">TX Packets</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val" id="m-rx">0</span>
+              <span class="metric-label">RX (Delivered)</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val" id="m-ack">0</span>
+              <span class="metric-label">ACKs</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val" id="m-retry" style="color:var(--amber)">0</span>
+              <span class="metric-label">Retries</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val" id="m-drop" style="color:var(--red)">0</span>
+              <span class="metric-label">Drops</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val" id="m-relay" style="color:var(--green)">0</span>
+              <span class="metric-label">Relay Activations</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val" id="m-false" style="color:var(--amber)">0</span>
+              <span class="metric-label">Simulated False Trips</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val" id="m-lat" style="color:var(--cyan)">0.0 ms</span>
+              <span class="metric-label">Avg Latency</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info box -->
+        <div class="panel" style="padding:14px;">
+          <p style="font-size:11px; color:var(--text-dim); line-height:1.7;">
+            <strong style="color:var(--amber);">⚠ Simulation notice:</strong>
+            All sensor values, thresholds and communication metrics displayed here are
+            <em>simulated for demonstration purposes only</em>. They do not represent
+            real field measurements, calibrated instrument readings or actual network
+            performance. No real-world safety decisions should be made based on this simulation.
+          </p>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Event Timeline</span>
+          <span style="font-size:10px; font-family:var(--mono); color:var(--text-dim);">Latest first</span>
+        </div>
+        <div class="timeline-body" id="timeline">
+          <div class="tl-row">
+            <span class="tl-tick">T+0</span>
+            <span class="tl-ts">--:--:--</span>
+            <span class="tl-event" style="color:var(--text-dim);">Press ▶ Start to begin simulation</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.bottom-row -->
+
+    </div><!-- /#view-digital-twin -->
+
+    <!-- ─────────────────────────────────────────────────────────────
+         TAB 2: DEDICATED THREE-PILLAR PROOF ENVIRONMENT
+    ────────────────────────────────────────────────────────────── -->
+    <div id="view-three-pillar-proof" class="view-section" style="display:none;">
+
+      <!-- ── Proof Header Banner ────────────────────────────────── -->
+      <div class="proof-banner">
+        <div class="proof-banner-top">
+          <div class="proof-banner-title">
+            <span style="font-size:22px;">🛡️</span>
+            <div>
+              <h2>Three-Pillar Proof Environment (Software Simulation Level)</h2>
+              <div style="font-size:11px; color:var(--text-dim); font-family:var(--mono); margin-top:2px;">
+                PS26178 · Backlog Champions · Two-Node Disaster-Response System
+              </div>
+            </div>
+          </div>
+          <div class="proof-pills">
+            <span id="proof-banner-status" class="proof-pill not-tested">NOT TESTED</span>
+            <span class="proof-pill hw-pending">HARDWARE VALIDATION PENDING</span>
+            <span class="proof-pill not-tested">SIMULATION ONLY</span>
+          </div>
+        </div>
+        <p class="proof-banner-desc">
+          This dedicated environment demonstrates all three project pillars operating together at the 
+          <strong>software simulation level</strong>. All statuses and metrics are derived dynamically from verified simulation events and strict assertion checks. 
+          Fault-injection scenarios verify that the software properly detects faults without false trips.
+        </p>
+      </div>
+
+      <!-- ── Proof Controls Toolbar ─────────────────────────────── -->
+      <div class="proof-toolbar">
+        <div class="btn-row">
+          <button id="btn-run-full-proof" class="btn-proof-primary">
+            ▶ Run Full Proof (13-Step Automated Scenario)
+          </button>
+          <button id="btn-run-p1" class="btn-ghost">📡 Pillar 1 Tests (7)</button>
+          <button id="btn-run-p2" class="btn-ghost">⚡ Pillar 2 Tests (6)</button>
+          <button id="btn-run-p3" class="btn-ghost">🏔️ Pillar 3 Tests (5)</button>
+          <button id="btn-run-all-tests" class="btn-warn">🧪 Run All Tests (18)</button>
+          <button id="btn-reset-proof" class="btn-ghost">↺ Reset Proof</button>
+        </div>
+        <div class="flex-center gap-8">
+          <label style="font-size:11px; color:var(--text-dim); display:flex; align-items:center; gap:6px;">
+            Step Delay:
+            <select id="proof-speed" class="speed-select">
+              <option value="350" selected>350 ms (Demo)</option>
+              <option value="150">150 ms (Fast)</option>
+              <option value="0">0 ms (Instantaneous)</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <!-- ── Continuous 13-Step Stepper & Verification Console ──── -->
+      <div class="stepper-container">
+        <div class="stepper-header">
+          <div class="stepper-title">
+            <span>Continuous End-to-End Scenario (13 Verified Steps)</span>
+            <span id="stepper-step-counter" style="font-size:11px; color:var(--cyan); font-family:var(--mono);">Step 0 / 13</span>
+          </div>
+          <span id="stepper-status-chip" class="proof-pill not-tested">NOT STARTED</span>
+        </div>
+
+        <div class="stepper-track" id="stepper-track">
+          <!-- Steps 1 to 13 generated dynamically -->
+        </div>
+
+        <!-- Human Confirmation Prompt (Step 10 Gate) -->
+        <div id="human-gate-prompt" class="human-gate-prompt" style="display:none;">
+          <div class="human-gate-text">
+            <div class="human-gate-title">
+              <span>⏸</span> STEP 10: READY TO REOPEN — Awaiting Human Confirmation
+            </div>
+            <div class="human-gate-detail">
+              Node B local sensor is stable (water: 0.0%) and Upstream Zone A is CLEARED. 
+              According to safety discipline, the downstream zone remains <strong>CLOSED</strong> until an explicit human operator authorization is issued. Safe Zone C remains unchanged.
+            </div>
+          </div>
+          <button id="btn-human-confirm-proof" class="btn-human-confirm">
+            ✔ Authorize Downstream Reopen
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Step Event Stream Table ────────────────────────────── -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">End-to-End Execution &amp; Assertion Stream</span>
+          <span style="font-size:10px; font-family:var(--mono); color:var(--text-dim);">Live Step-by-Step Assertion Verification</span>
+        </div>
+        <div class="proof-stream-table-wrap">
+          <table class="proof-table" id="proof-stream-table">
+            <thead>
+              <tr>
+                <th style="width:70px;">Step #</th>
+                <th style="width:130px;">Status</th>
+                <th>Scenario Description &amp; Verification Evidence</th>
+              </tr>
+            </thead>
+            <tbody id="proof-stream-tbody">
+              <tr>
+                <td colspan="3" style="text-align:center; padding:18px; color:var(--text-dim); font-family:var(--mono);">
+                  Click &quot;▶ Run Full Proof&quot; to execute the 13-step continuous verification sequence.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── Final Proof Report Section ─────────────────────────── -->
+      <div id="proof-report-section" class="proof-report-card" style="display:none;">
+        <div class="report-top-header">
+          <div class="report-verdict-group">
+            <span style="font-size:24px;">📊</span>
+            <div>
+              <div class="report-verdict-title">Final Proof Report — Three Pillars Verification</div>
+              <div style="font-size:11px; color:var(--text-dim); font-family:var(--mono);">
+                Continuous end-to-end execution verdict and assertion breakdown
+              </div>
+            </div>
+          </div>
+          <div class="proof-pills">
+            <span id="report-overall-badge" class="proof-pill not-tested">NOT TESTED</span>
+            <span class="proof-pill hw-pending">HARDWARE VALIDATION PENDING</span>
+          </div>
+        </div>
+        <div class="btn-row" style="margin-top:10px;">
+          <button id="btn-download-proof-json" class="btn-ghost">Download JSON Evidence</button>
+          <button id="btn-download-proof-csv" class="btn-ghost">Download CSV Evidence</button>
+        </div>
+        <div id="proof-report-summary" style="margin-top:8px; font-size:11px; color:var(--text-dim); font-family:var(--mono);"></div>
+
+        <!-- 3 Pillars Grid -->
+        <div class="pillars-summary-grid">
+          <!-- Pillar 1 -->
+          <div class="pillar-report-box" id="p1-report-box">
+            <div class="pillar-box-header">
+              <span class="pillar-box-title">Pillar 1: Reliable Signalling</span>
+              <span id="p1-report-status" class="proof-pill not-tested">NOT TESTED</span>
+            </div>
+            <div style="font-size:11px; color:var(--text-dim);">
+              Verified hazard transmission, ACK reception, monotonic seq numbers, latency recording, and retry/fault tolerance.
+            </div>
+            <div class="assertion-list" id="p1-assertions-list">
+              <!-- dynamic assertions -->
+            </div>
+          </div>
+
+          <!-- Pillar 2 -->
+          <div class="pillar-report-box" id="p2-report-box">
+            <div class="pillar-box-header">
+              <span class="pillar-box-title">Pillar 2: Correct Actuation</span>
+              <span id="p2-report-status" class="proof-pill not-tested">NOT TESTED</span>
+            </div>
+            <div style="font-size:11px; color:var(--text-dim);">
+              Verified all relay channels, fan, lamp &amp; buzzer actuated. Spike immunity, noise tolerance, and fault handling proven.
+            </div>
+            <div class="assertion-list" id="p2-assertions-list">
+              <!-- dynamic assertions -->
+            </div>
+          </div>
+
+          <!-- Pillar 3 -->
+          <div class="pillar-report-box" id="p3-report-box">
+            <div class="pillar-box-header">
+              <span class="pillar-box-title">Pillar 3: Safe Recovery</span>
+              <span id="p3-report-status" class="proof-pill not-tested">NOT TESTED</span>
+            </div>
+            <div style="font-size:11px; color:var(--text-dim);">
+              Verified local sensor stability, upstream clearance dependency, READY TO REOPEN gate, human confirmation, and safe zone immutability.
+            </div>
+            <div class="assertion-list" id="p3-assertions-list">
+              <!-- dynamic assertions -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Measured Metrics Table -->
+        <div>
+          <div class="section-label" style="margin-bottom:8px;">Measured Simulated Metrics (Trial Run)</div>
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <span class="metric-val text-cyan" id="rep-m-seq">0</span>
+              <span class="metric-label">Sequence #</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val text-cyan" id="rep-m-lat">0.0 ms</span>
+              <span class="metric-label">Avg Round-Trip Latency</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val" id="rep-m-tx">0</span>
+              <span class="metric-label">TX Packets</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val text-green" id="rep-m-ack">0</span>
+              <span class="metric-label">ACKs Received</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val text-amber" id="rep-m-retry">0</span>
+              <span class="metric-label">Retries Handled</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val text-green" id="rep-m-relay">0</span>
+              <span class="metric-label">Relay Activations</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val text-green" id="rep-m-false">0</span>
+              <span class="metric-label">Injected Single-Sample Spikes</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val" id="rep-m-trans">0</span>
+              <span class="metric-label">State Transitions</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hardware note explanation -->
+        <div style="background:rgba(255,170,0,0.06); border:1px solid rgba(255,170,0,0.3); border-radius:4px; padding:10px 14px; font-size:11px; color:var(--amber); line-height:1.6;">
+          <strong>HARDWARE VALIDATION PENDING:</strong> Software assertions have passed at the simulation level. Physical field deployment, physical relay contact integrity, and real-world LoRa wireless latency require physical device verification.
+        </div>
+      </div>
+
+      <!-- ── Individual Pillar & Fault Scenarios Matrix ─────────── -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Pillar Unit Tests &amp; Fault Injection Suite (18 Scenarios)</span>
+          <span style="font-size:10px; font-family:var(--mono); color:var(--text-dim);">
+            Fault tests PASS when the fault is correctly detected and handled without false trip
+          </span>
+        </div>
+
+        <div style="padding:14px; display:flex; flex-direction:column; gap:14px;">
+          <!-- Suite filter bar -->
+          <div class="suite-filter-bar">
+            <div class="suite-filter-pills">
+              <button class="filter-pill-btn active" data-filter="all" id="btn-filter-all">All Tests (18)</button>
+              <button class="filter-pill-btn" data-filter="1" id="btn-filter-p1">Pillar 1: Signalling (7)</button>
+              <button class="filter-pill-btn" data-filter="2" id="btn-filter-p2">Pillar 2: Actuation (6)</button>
+              <button class="filter-pill-btn" data-filter="3" id="btn-filter-p3">Pillar 3: Recovery (5)</button>
+            </div>
+            <div style="font-size:11px; color:var(--text-dim); font-family:var(--mono);" id="test-suite-summary-text">
+              Suite status: Not executed yet
+            </div>
+          </div>
+
+          <!-- Cards Grid -->
+          <div class="test-cards-grid" id="test-cards-grid">
+            <!-- Dynamic test cards -->
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /#view-three-pillar-proof -->
+
+  </main>
+
+</div><!-- /.app-shell -->
+
+<script type="module" src="js/ui.js"></script>
+<script>
+  window.addEventListener('error', function (event) {
+    var message = event.error && event.error.message ? event.error.message : event.message;
+    if (!message) return;
+    var notice = document.getElementById('boot-error');
+    if (!notice) {
+      notice = document.createElement('div');
+      notice.id = 'boot-error';
+      notice.style.cssText = 'position:fixed; inset:16px 16px auto 16px; z-index:9999; padding:14px; border:1px solid #ff3b3b; background:#24151a; color:#ffd7d7; font:13px monospace; white-space:pre-wrap;';
+      document.body.appendChild(notice);
+    }
+    notice.textContent = 'Ares failed to load. Open it through http://localhost:8080/ (not file://) and keep the local server running.\n\n' + message;
+  });
+</script>
+</body>
+</html>

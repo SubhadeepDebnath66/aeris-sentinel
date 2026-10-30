@@ -1,0 +1,8 @@
+{
+  "name": "ares-sih2026-simulation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  }
+}
