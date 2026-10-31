@@ -1,0 +1,20 @@
+[wokwi]
+version = 1
+firmware = "main.cpp"
+elf = ".pio/build/esp32dev/firmware.elf"
+
+[[chip]]
+name = "chip-sx1278"
+binary = "sx1278.chip.c"
+
+[[chip]]
+name = "chip-soil"
+binary = "soil.chip.c"
+
+[[chip]]
+name = "chip-shifter"
+binary = "shifter.chip.c"
+
+[[chip]]
+name = "chip-max485"
+binary = "max485.chip.c"

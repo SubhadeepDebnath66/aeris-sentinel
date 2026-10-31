@@ -1,0 +1,9 @@
+{
+  "name": "chip-shifter",
+  "author": "Antigravity Embedded Systems Team",
+  "pins": [
+    "GND",
+    "IN_5V",
+    "OUT_3V3"
+  ]
+}

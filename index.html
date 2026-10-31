@@ -1,29 +1,535 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Ares three-pillar industrial safety dashboard — simulation mode."><title>Ares | Safety Monitoring Dashboard</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TX100 Industrial IoT Hazard Detection Probe — Digital Twin & HIL Simulation</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body><div class="app-shell">
-  <header class="topbar"><div class="brand"><span class="brand-mark">A</span><div><h1>ARES</h1><p>Hillside safety monitoring</p></div></div><div class="header-meta"><span class="mode-tag">SIMULATION</span><span id="clock">--:--:--</span></div></header>
-  <main>
-    <section class="status-strip" aria-live="polite"><div><span id="system-dot" class="status-dot"></span><strong id="system-status">NOT RUNNING</strong><span id="system-detail">Start the monitor to begin receiving simulated telemetry.</span></div><div class="status-actions"><button class="primary" id="start">Start monitoring</button><button class="secondary" id="pause" disabled>Pause</button><button class="secondary" id="reset">Reset</button></div></section>
-    <section class="section-heading"><div><p class="eyebrow">OPERATING VIEW</p><h2>Three-pillar safety status</h2></div><span class="last-update">Tick <strong id="tick">0</strong></span></section>
-    <section class="pillar-grid">
-      <article class="pillar-card"><div class="card-top"><span class="pillar-number">01</span><span class="status-chip neutral" id="p1-status">NOT TESTED</span></div><h3>Reliable signalling</h3><p>Node A alert reaches Node B with sequence, ACK and bounded retries.</p><div class="pillar-metric"><strong id="p1-value">—</strong><span id="p1-detail">No verification evidence</span></div></article>
-      <article class="pillar-card"><div class="card-top"><span class="pillar-number">02</span><span class="status-chip neutral" id="p2-status">NOT TESTED</span></div><h3>Correct actuation</h3><p>Confirmed hazards drive the safe output state; spikes do not trip it.</p><div class="pillar-metric"><strong id="p2-value">—</strong><span id="p2-detail">No verification evidence</span></div></article>
-      <article class="pillar-card"><div class="card-top"><span class="pillar-number">03</span><span class="status-chip neutral" id="p3-status">NOT TESTED</span></div><h3>Safe recovery</h3><p>Zones reopen only after stable readings, upstream clearance and approval.</p><div class="pillar-metric"><strong id="p3-value">—</strong><span id="p3-detail">No verification evidence</span></div></article>
-    </section>
-    <section class="section-heading compact"><div><p class="eyebrow">LIVE TELEMETRY</p><h2>System path</h2></div><span class="sim-note">Values are simulated until hardware is connected</span></section>
-    <section class="telemetry-grid">
-      <article class="panel node-panel"><div class="panel-heading"><div><span class="eyebrow">NODE A</span><h3>Slope monitor</h3></div><span class="status-chip neutral" id="node-a-state">IDLE</span></div><div class="reading"><strong id="slope-value">0.0</strong><span>mm displacement</span></div><div class="bar"><i id="slope-bar"></i></div><div class="threshold">Confirmation <strong id="slope-confirm">0/5</strong> · threshold 70 mm</div></article>
-      <article class="panel link-panel"><div class="panel-heading"><div><span class="eyebrow">LINK</span><h3>Node A → Node B</h3></div><span class="status-chip good" id="link-state">READY</span></div><div class="reading"><strong id="link-health">100%</strong><span>link health</span></div><div class="link-line"></div><div class="threshold"><span>ACK <strong id="ack-count">0</strong></span><span>Latency <strong id="latency">—</strong></span><span>Drops <strong id="drops">0</strong></span></div></article>
-      <article class="panel node-panel"><div class="panel-heading"><div><span class="eyebrow">NODE B</span><h3>Relay controller</h3></div><span class="status-chip neutral" id="node-b-state">IDLE</span></div><div class="reading"><strong id="water-value">0.0</strong><span>% water contact</span></div><div class="bar"><i id="water-bar"></i></div><div class="output-row"><span>Outputs</span><strong id="outputs">SAFE / OFF</strong></div></article>
-    </section>
-    <section class="lower-grid"><article class="panel"><div class="panel-heading"><div><span class="eyebrow">ZONE STATUS</span><h3>Controlled recovery</h3></div><span class="small-note">Safe Zone C is immutable</span></div><div class="zones"><div><span>Upstream A</span><strong id="zone-up">NORMAL</strong></div><div><span>Downstream B</span><strong id="zone-down">NORMAL</strong></div><div><span>Safe Zone C</span><strong class="safe">SAFE</strong></div></div></article>
-      <article class="panel"><div class="panel-heading"><div><span class="eyebrow">OPERATOR ACTIONS</span><h3>Simulation controls</h3></div></div><div class="control-grid"><button id="slope" class="warn">Inject slope hazard</button><button id="water" class="warn">Inject water contact</button><button id="spike" class="secondary">Inject sensor spike</button><button id="recover" class="good-button">Begin recovery</button><button id="confirm" class="good-button">Confirm reopen</button></div><label class="range-control">Packet loss <input id="loss" type="range" min="0" max="100" value="0"><output id="loss-value">0%</output></label></article></section>
-    <section class="panel activity-panel"><div class="panel-heading"><div><span class="eyebrow">EVENT LOG</span><h3>Latest system events</h3></div><button id="run-tests" class="secondary">Run software verification</button></div><ol id="event-log" class="event-log"><li>Waiting for simulation start.</li></ol></section>
-    <p class="disclaimer">Simulation only. Hardware validation is pending. Sensor units and thresholds are illustrative until the firmware and physical device are connected.</p>
+<body>
+  <!-- TOP NAVIGATION & STATUS HEADER -->
+  <header class="top-nav">
+    <div class="brand">
+      <div class="logo-icon">TX</div>
+      <div class="brand-text">
+        <h1>TX100 INDUSTRIAL IoT HAZARD PROBE</h1>
+        <span class="subtitle">DIGITAL TWIN & HARDWARE-IN-THE-LOOP (HIL) EMULATION • ESP32 DEVKIT V1</span>
+      </div>
+    </div>
+
+    <div class="header-status-group">
+      <div class="status-badge" id="badge-network">
+        <span class="indicator-dot online"></span>
+        <span class="badge-label">NODE: <strong id="lbl-node-state">ONLINE</strong></span>
+      </div>
+      <div class="status-badge" id="badge-rate">
+        <span class="pulse-dot"></span>
+        <span class="badge-label">SYNC: <strong>10.0 Hz</strong></span>
+      </div>
+      <div class="status-badge" id="badge-safety">
+        <span class="indicator-dot green" id="dot-safety"></span>
+        <span class="badge-label">RELAYS: <strong id="lbl-safety-state">ARMED (SECURE)</strong></span>
+      </div>
+      <div class="status-badge" id="badge-buffer">
+        <span class="badge-label">NVS RETRY: <strong id="lbl-buffer-count">0 PKTS</strong></span>
+      </div>
+      <button class="btn btn-audio" id="btn-audio-toggle" title="Toggle Relay & Siren Audio">
+        <span id="audio-icon">🔊</span> AUDIO: <strong id="audio-state-text">ON</strong>
+      </button>
+    </div>
+  </header>
+
+  <!-- QUICK ACTION TOOLBAR -->
+  <div class="toolbar">
+    <div class="toolbar-title">HAZARD SIMULATION INJECTION:</div>
+    <div class="btn-group">
+      <button class="btn btn-warning" id="btn-auto-flood">🌊 Auto-Simulate Flood</button>
+      <button class="btn btn-danger" id="btn-auto-landslide">⛰️ Auto-Simulate Landslide</button>
+      <button class="btn btn-critical" id="btn-break-joint">💥 Break Terrain FixedJoint</button>
+      <button class="btn btn-secondary" id="btn-reset-system">🔄 System Reset</button>
+    </div>
+    <div class="toolbar-divider"></div>
+    <div class="toolbar-title">AUTOMATED QA:</div>
+    <div class="btn-group">
+      <button class="btn btn-primary" id="btn-run-tests">🧪 Run Full Verification Suite</button>
+    </div>
+  </div>
+
+  <!-- MAIN SCADA SYSTEM ALARM BANNER (DYNAMIC) -->
+  <div class="scada-alarm-banner normal" id="scada-alarm-banner">
+    <div class="alarm-icon" id="alarm-banner-icon">✓</div>
+    <div class="alarm-content">
+      <div class="alarm-headline" id="alarm-banner-title">ALL SYSTEMS OPERATIONAL — NORMAL MONITORING STATUS</div>
+      <div class="alarm-desc" id="alarm-banner-desc">ESP32 Telemetry streaming nominal telemetry frames over MQTT & RS485. No hazard thresholds violated.</div>
+    </div>
+    <div class="alarm-timestamp" id="alarm-banner-time">T+00:00:00</div>
+  </div>
+
+  <!-- MAIN DASHBOARD GRID -->
+  <main class="dashboard-grid">
+
+    <!-- COLUMN 1: 3D DIGITAL TWIN & HAZARD CONTROLS -->
+    <div class="grid-column">
+
+      <!-- 3D HAZARDS DIGITAL TWIN VIEWPORT -->
+      <section class="card viewport-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="icon">🌐</span> 3D Environmental Hazard Digital Twin
+          </div>
+          <div class="card-tools">
+            <span class="camera-info" id="cam-info">Isometric 45°</span>
+            <button class="btn-mini" id="btn-cam-reset">Reset View</button>
+          </div>
+        </div>
+        <div class="canvas-container">
+          <canvas id="hazard-canvas" width="640" height="360"></canvas>
+          <div class="canvas-overlay">
+            <div class="overlay-metric">
+              <span class="label">WATER ELEVATION:</span>
+              <span class="value" id="disp-water-elevation">0.20 m</span>
+            </div>
+            <div class="overlay-metric">
+              <span class="label">ACOUSTIC ToF:</span>
+              <span class="value" id="disp-acoustic-tof">10,500 µs</span>
+            </div>
+            <div class="overlay-metric">
+              <span class="label">SLOPE TILT:</span>
+              <span class="value" id="disp-slope-tilt">12.4°</span>
+            </div>
+            <div class="overlay-metric">
+              <span class="label">SOIL SATURATION:</span>
+              <span class="value" id="disp-soil-sat">22.0%</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer-info">
+          <span>TX100 Ultrasonic Transducer (40 kHz) • Soil Permittivity Sensor • MPU6050 6-DoF Kinematics</span>
+        </div>
+      </section>
+
+      <!-- HAZARD CONTROL PANEL -->
+      <section class="card controls-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="icon">🎛️</span> Hazard Control & Kinematics Engine
+          </div>
+          <div class="badge badge-interactive">LIVE HIL SLIDERS</div>
+        </div>
+        <div class="card-body">
+
+          <!-- FLOOD CONTROL -->
+          <div class="hazard-control-group flood-group">
+            <div class="control-header">
+              <span class="control-name">🌊 Flood Control (Rising Water Plane)</span>
+              <span class="control-reading" id="txt-flood-dist">Distance d: <strong>180 cm</strong></span>
+            </div>
+            <div class="slider-row">
+              <span class="slider-boundary">Safe (200cm)</span>
+              <input type="range" id="slider-flood" min="10" max="200" value="180" class="slider slider-flood">
+              <span class="slider-boundary danger">Submerged (10cm)</span>
+            </div>
+            <div class="control-meta-grid">
+              <div>Acoustic Echo Pulse: <strong id="val-echo-pulse">10,496 µs</strong></div>
+              <div>Water Distance: <strong id="val-water-dist">180.0 cm</strong></div>
+              <div>Threshold: <span class="tag tag-danger">CRITICAL &lt; 50 cm</span></div>
+              <div>Flood Pump Logic: <strong id="val-flood-pump">OFF</strong></div>
+            </div>
+          </div>
+
+          <!-- LANDSLIDE CONTROL: PHASE 1 -->
+          <div class="hazard-control-group soil-group">
+            <div class="control-header">
+              <span class="control-name">🌱 Landslide Phase 1 — Soil Moisture Saturation (θv)</span>
+              <span class="control-reading" id="txt-soil-sat">Permittivity εr: <strong>12.0</strong></span>
+            </div>
+            <div class="slider-row">
+              <span class="slider-boundary">Dry (0% / 3.0V)</span>
+              <input type="range" id="slider-soil" min="0" max="100" value="22" class="slider slider-soil">
+              <span class="slider-boundary danger">Saturated (100% / 1.8V)</span>
+            </div>
+            <div class="control-meta-grid">
+              <div>GPIO 34 ADC In: <strong id="val-soil-volt">2.74 V</strong></div>
+              <div>Volumetric Water θv: <strong id="val-soil-pct">22.0 %</strong></div>
+              <div>Warning Threshold: <span class="tag tag-warning">&lt; 2.20 V (Pre-Alert)</span></div>
+              <div>Pore Water Pressure: <strong id="val-pore-pressure">14.2 kPa</strong></div>
+            </div>
+          </div>
+
+          <!-- LANDSLIDE CONTROL: PHASE 2 -->
+          <div class="hazard-control-group tilt-group">
+            <div class="control-header">
+              <span class="control-name">⛰️ Landslide Phase 2 — Ground Tilt & Shear Kinematics</span>
+              <span class="control-reading" id="txt-kinematics">Total Acc: <strong>1.01 g</strong></span>
+            </div>
+
+            <div class="slider-subrow">
+              <label for="slider-tilt">Terrain Tilt Angle (θ): <strong id="val-tilt-angle">12.0°</strong></label>
+              <input type="range" id="slider-tilt" min="0" max="90" value="12" class="slider slider-tilt">
+            </div>
+
+            <div class="multi-slider-grid">
+              <div>
+                <label for="slider-ax">Ax: <strong id="val-ax">0.05 g</strong></label>
+                <input type="range" id="slider-ax" min="0" max="400" value="5" class="slider slider-mini">
+              </div>
+              <div>
+                <label for="slider-ay">Ay: <strong id="val-ay">0.21 g</strong></label>
+                <input type="range" id="slider-ay" min="0" max="400" value="21" class="slider slider-mini">
+              </div>
+              <div>
+                <label for="slider-az">Az: <strong id="val-az">0.98 g</strong></label>
+                <input type="range" id="slider-az" min="0" max="400" value="98" class="slider slider-mini">
+              </div>
+            </div>
+
+            <div class="control-meta-grid">
+              <div>Total Acceleration |A|: <strong id="val-total-acc">1.01 g</strong></div>
+              <div>Shear Stress Index: <strong id="val-shear-index">0.24</strong></div>
+              <div>Emergency Limit: <span class="tag tag-danger">&gt; 1.50 g OR &gt; 45°</span></div>
+              <div>Direct Relay Cutoff: <strong id="val-direct-trip">INACTIVE (&lt;10ms)</strong></div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+
+    <!-- COLUMN 2: COMPLETE ELECTRICAL SCHEMATIC & LIVE PINOUT -->
+    <div class="grid-column">
+
+      <!-- ELECTRICAL SCHEMATIC & HARDWARE VIEW -->
+      <section class="card circuit-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="icon">⚡</span> Complete TX100 Schematic & Power Tree
+          </div>
+          <div class="power-rail-indicators">
+            <span class="rail-tag rail-24v">24V IN: <strong id="disp-rail-24v">24.0V</strong></span>
+            <span class="rail-tag rail-5v">5V BUCK: <strong id="disp-rail-5v">5.02V</strong></span>
+            <span class="rail-tag rail-3v3">3.3V LDO: <strong id="disp-rail-3v3">3.30V</strong></span>
+          </div>
+        </div>
+
+        <div class="card-body schematic-body">
+          <!-- POWER TREE -->
+          <div class="power-tree-diagram">
+            <div class="tree-node power-src">
+              <span class="node-title">24V DC Industrial</span>
+              <span class="node-sub">Main Rail In</span>
+              <div class="node-meter">24.0 V</div>
+            </div>
+            <div class="tree-arrow">➔</div>
+            <div class="tree-node buck-mod">
+              <span class="node-title">MP1584 Buck</span>
+              <span class="node-sub">Step-Down Reg</span>
+              <div class="node-meter green">5.0 V</div>
+            </div>
+            <div class="tree-arrow">➔</div>
+            <div class="tree-node ldo-mod">
+              <span class="node-title">AMS1117-3.3V</span>
+              <span class="node-sub">Ultra-Clean LDO</span>
+              <div class="node-meter blue">3.3 V</div>
+            </div>
+          </div>
+
+          <!-- LEVEL SHIFTER & SENSORS SCHEMATIC BLOCK -->
+          <div class="schematic-blocks-row">
+            <div class="schematic-block">
+              <div class="block-title">Ultrasonic Echo Level Shifter</div>
+              <div class="circuit-divider-art">
+                <span>JSN-SR04T ECHO (5V)</span>
+                <span class="resistor">──[ 1kΩ ]──┬──[ 2kΩ ]── GND</span>
+                <span class="arrow-down">│</span>
+                <span class="highlight-pin">GPIO 35 (3.33V Safe Logic)</span>
+              </div>
+            </div>
+
+            <div class="schematic-block">
+              <div class="block-title">Physical Key Switch (GPIO 39)</div>
+              <div class="switch-block-inner">
+                <div class="switch-status-visual">
+                  <span class="key-label">KEY POSITION:</span>
+                  <button class="btn btn-switch" id="btn-toggle-key">ARMED (RUN)</button>
+                </div>
+                <div class="switch-specs">
+                  <span>10kΩ Pull-Up to 3.3V</span> •
+                  <span>Contact Bounce: <strong id="disp-bounce-time">1 ms</strong></span> •
+                  <span>SW Debounce: <strong>20 ms</strong></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RELAY ARRAYS VIEW -->
+          <div class="relays-container">
+            <!-- DIRECT HIGH-SPEED SAFETY RELAYS -->
+            <div class="relay-subgroup direct-relays">
+              <div class="subgroup-title">Fast Hardware Safety & Latching Relays (Sub-10ms Direct Cutoff)</div>
+              <div class="relays-grid-3">
+                <div class="relay-card" id="card-relay-25">
+                  <div class="relay-header">
+                    <span class="relay-name">GPIO 25</span>
+                    <span class="relay-state off" id="st-relay-25">OPEN</span>
+                  </div>
+                  <div class="relay-role">Direct Safety Cutoff 1</div>
+                  <div class="trip-time" id="time-relay-25">Latency: 4.2 ms</div>
+                </div>
+                <div class="relay-card" id="card-relay-32">
+                  <div class="relay-header">
+                    <span class="relay-name">GPIO 32</span>
+                    <span class="relay-state off" id="st-relay-32">OPEN</span>
+                  </div>
+                  <div class="relay-role">Secondary Safety Cutoff 2</div>
+                  <div class="trip-time" id="time-relay-32">Latency: 4.8 ms</div>
+                </div>
+                <div class="relay-card" id="card-relay-33">
+                  <div class="relay-header">
+                    <span class="relay-name">GPIO 33</span>
+                    <span class="relay-state off" id="st-relay-33">OPEN</span>
+                  </div>
+                  <div class="relay-role">Direct Hardware Latching</div>
+                  <div class="trip-time" id="time-relay-33">Trip Lock: OFF</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PCF8574 8-CHANNEL RELAY BOARD -->
+            <div class="relay-subgroup i2c-relays">
+              <div class="subgroup-title">PCF8574 I2C 8-Channel Relay Module (Address: 0x20)</div>
+              <div class="relays-grid-8" id="pcf8574-relays">
+                <!-- Dynamically generated or populated -->
+              </div>
+            </div>
+          </div>
+
+          <!-- ESP32 30-PIN REAL-TIME PINOUT MONITOR -->
+          <div class="pinout-panel">
+            <div class="panel-headline">
+              <span>ESP32 DevKit V1 — 30-Pin Logic Analyzer</span>
+              <span class="legend">
+                <span class="leg-item"><span class="dot high"></span> HIGH (3.3V)</span>
+                <span class="leg-item"><span class="dot low"></span> LOW (0V)</span>
+                <span class="leg-item"><span class="dot analog"></span> ADC/PWM</span>
+                <span class="leg-item"><span class="dot bus"></span> BUS TX/RX</span>
+              </span>
+            </div>
+            <div class="pinout-table" id="esp32-pinout-table">
+              <!-- Rendered by JS: 15 pins left, 15 pins right -->
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- LIVE PROTOCOL BUS ANALYZERS -->
+      <section class="card buses-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="icon">🔍</span> Live Protocol Bus Analyzers (I2C • SPI • RS485/UART)
+          </div>
+          <div class="bus-tabs">
+            <button class="bus-tab active" data-bus="i2c">I2C (0x20 / 0x68)</button>
+            <button class="bus-tab" data-bus="spi">SPI (SX1278 LoRa)</button>
+            <button class="bus-tab" data-bus="rs485">RS485 / Modbus RTU</button>
+          </div>
+        </div>
+
+        <div class="card-body bus-body">
+          <!-- I2C ANALYZER -->
+          <div class="bus-pane active" id="pane-i2c">
+            <div class="bus-stream-header">
+              <span>Bus: <strong>Wire (SDA: GPIO 21, SCL: GPIO 22)</strong></span>
+              <span>Speed: <strong>400 kHz Fast-Mode</strong></span>
+            </div>
+            <div class="bus-log-window" id="i2c-log">
+              <!-- Live I2C frames -->
+            </div>
+          </div>
+
+          <!-- SPI ANALYZER -->
+          <div class="bus-pane" id="pane-spi">
+            <div class="bus-stream-header">
+              <span>Bus: <strong>VSPI (SCK: 18, MISO: 19, MOSI: 23, NSS: 5)</strong></span>
+              <span>Chip: <strong>SX1278 (Reg 0x42 = 0x12)</strong></span>
+            </div>
+            <div class="bus-log-window" id="spi-log">
+              <!-- Live SPI frames -->
+            </div>
+          </div>
+
+          <!-- RS485 ANALYZER -->
+          <div class="bus-pane" id="pane-rs485">
+            <div class="bus-stream-header">
+              <span>Bus: <strong>Serial2 (RX: 16, TX: 17, DE/RE: GPIO 4)</strong></span>
+              <span>Direction: <strong id="rs485-dir-state" class="tag tag-rx">RX (LISTENING)</strong></span>
+            </div>
+            <div class="bus-log-window" id="rs485-log">
+              <!-- Live Modbus RTU packets -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- COLUMN 3: CONNECTIVITY & FAULT INJECTION, SCADA TELEMETRY & VERIFICATION SUITE -->
+    <div class="grid-column">
+
+      <!-- CONNECTIVITY & FAULT INJECTION PANEL -->
+      <section class="card connectivity-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="icon">🔌</span> Connectivity & Fault Injection Panel
+          </div>
+          <div class="state-toggle-wrapper">
+            <button class="btn btn-toggle-net online" id="btn-toggle-network">MODE: ONLINE</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="fault-controls-grid">
+            <div class="fault-item">
+              <label>Network Connectivity:</label>
+              <div class="btn-group-sm">
+                <button class="btn-sm active" id="btn-net-online">Connected ("Wokwi-GUEST")</button>
+                <button class="btn-sm" id="btn-net-offline">Offline (Severed Link)</button>
+              </div>
+            </div>
+            <div class="fault-item">
+              <label>RS485 Cable Integrity:</label>
+              <div class="btn-group-sm">
+                <button class="btn-sm active" id="btn-cable-intact">Cable Intact</button>
+                <button class="btn-sm" id="btn-cable-severed">Severed Cable</button>
+              </div>
+            </div>
+            <div class="fault-item">
+              <label>24V Auxiliary Power:</label>
+              <div class="btn-group-sm">
+                <button class="btn-sm active" id="btn-power-nominal">Nominal 24V</button>
+                <button class="btn-sm" id="btn-power-drop">Brownout / Loss</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- OFFLINE NVS RETRY RING BUFFER -->
+          <div class="nvs-buffer-viewer">
+            <div class="buffer-header">
+              <span>Local NVS / FIFO Retry Ring Buffer</span>
+              <span class="buffer-stats" id="buffer-stats">Capacity: 0/50 Packets Stored</span>
+            </div>
+            <div class="buffer-list" id="buffer-packet-list">
+              <div class="buffer-empty-msg">No unsent packets. Live 10Hz MQTT telemetry streaming normally.</div>
+            </div>
+            <div class="buffer-meta">
+              <span>LoRa CAD (DIO1) Active Retries: <strong id="lora-cad-retries">0</strong></span>
+              <span class="reconcile-tag" id="reconcile-indicator">SYNC READY</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- REMOTE SCADA WATCHDOG & LIVE TELEMETRY STREAM -->
+      <section class="card scada-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="icon">📊</span> Remote SCADA Telemetry & LWT Watchdog
+          </div>
+          <div class="watchdog-badge" id="watchdog-badge">
+            LWT WATCHDOG: <strong id="lbl-watchdog">ACTIVE (100ms)</strong>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- LIVE JSON TELEMETRY FEED (10 HZ) -->
+          <div class="telemetry-viewer">
+            <div class="telemetry-header">
+              <span>MQTT Stream (tx100/env/distance, kinematics, alerts)</span>
+              <span class="fps-counter" id="fps-counter">10.0 Hz</span>
+            </div>
+            <pre class="telemetry-json" id="live-telemetry-json">{
+  "node_id": "TX100_PROBE_01",
+  "seq": 1042,
+  "timestamp_ms": 104200,
+  "status": "ONLINE",
+  "sensors": {
+    "flood_distance_cm": 180.0,
+    "echo_us": 10496,
+    "soil_moisture_pct": 22.0,
+    "soil_adc_v": 2.74,
+    "soil_permittivity": 12.0,
+    "accel_g": [0.05, 0.21, 0.98],
+    "total_acc_g": 1.01,
+    "tilt_deg": 12.0
+  },
+  "actuators": {
+    "safety_relay_gpio25": false,
+    "safety_relay_gpio32": false,
+    "latch_relay_gpio33": false,
+    "pcf8574_port": "0xFF"
+  },
+  "alarm_level": "NOMINAL"
+}</pre>
+          </div>
+
+          <!-- LORA PACKET TRANSMIT LOG -->
+          <div class="lora-feed-viewer">
+            <div class="lora-header">
+              <span>Ai-Thinker Ra-02 SX1278 (433/868 MHz) LoRa Transceiver</span>
+              <span class="lora-tx-tag" id="lora-tx-tag">DIO0: TXDone</span>
+            </div>
+            <div class="lora-hex-log" id="lora-hex-log">
+              <!-- Live Hex Packets -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AUTOMATED VERIFICATION SUITE & CI CONSOLE -->
+      <section class="card verification-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="icon">✅</span> Automated HIL Self-Test & Verification Console
+          </div>
+          <button class="btn btn-primary btn-sm" id="btn-run-tests-2">Run Verification Suite</button>
+        </div>
+        <div class="card-body test-body">
+          <div class="test-suite-status">
+            <div class="progress-bar-container">
+              <div class="progress-bar" id="test-progress-bar" style="width: 0%;"></div>
+            </div>
+            <div class="test-summary-row">
+              <span id="test-status-text">Ready to run automated assertions</span>
+              <span id="test-score-text">Passed: 0/4 Stages</span>
+            </div>
+          </div>
+          <div class="test-terminal" id="test-terminal">
+[SYSTEM READY] TX100 Digital Twin & Circuit Simulator initialized.
+[INFO] ESP32 DevKit V1 state machine running at 10 Hz telemetry sync rate.
+[INFO] Click 'Run Full Verification Suite' to execute automated test scenarios:
+       (a) I2C 0x20/0x68 bus scan & GPIO 39 key switch debounce test
+       (b) Flood threshold test (d = 35 cm)
+       (c) Landslide saturation (1.8V) + shear (>1.5g / >45°) test in Online mode
+       (d) Landslide emergency actuation + LWT watchdog alarm + FIFO reconnect sync in Offline mode
+          </div>
+        </div>
+      </section>
+
+    </div>
+
   </main>
-</div><script type="module" src="js/ui.js"></script></body></html>
+
+  <footer class="bottom-footer">
+    <div class="footer-left">
+      <span>TX100 Industrial IoT Hazard Detection Node • Zero-Failure Digital Twin & HIL Testbench</span>
+    </div>
+    <div class="footer-center">
+      <span>Firmware: PlatformIO / ESP-IDF • Wokwi WebAssembly Chips: sx1278, soil, shifter • Half-Duplex RS485 Modbus RTU</span>
+    </div>
+    <div class="footer-right">
+      <span>ESP32-WROOM-32 @ 240 MHz • FreeRTOS V10.4.3</span>
+    </div>
+  </footer>
+
+  <script src="sim_engine.js"></script>
+</body>
+</html>

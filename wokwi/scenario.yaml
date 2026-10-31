@@ -1,0 +1,84 @@
+name: TX100 Probe HIL Automated Verification Suite
+author: Antigravity Embedded Systems Team
+version: 1.0.0
+
+description: >
+  Comprehensive Hardware-in-the-Loop (HIL) automated test scenario for the TX100
+  Hazard Detection Node based on ESP32 DevKit V1. Exercises all sensors, actuators,
+  buses, fault injection modes, and verification assertions.
+
+steps:
+  # STAGE 0: Boot & Initialization
+  - name: Boot ESP32 & Initialize Peripherals
+    wait-for: "[SYSTEM READY] Dual-Core FreeRTOS Tasks Running."
+    timeout: 5000
+
+  # STAGE 1: I2C Bus Scan & Key Switch Debounce Verification
+  - name: Verify I2C Peripherals (0x68 MPU6050 and 0x20 PCF8574)
+    wait-for: "[I2C] MPU6050 detected at 0x68 [PASS]"
+    timeout: 3000
+
+  - name: Verify PCF8574 8-Bit Relay Driver
+    wait-for: "[I2C] PCF8574 8-Bit Relay expander detected at 0x20 [PASS]"
+    timeout: 3000
+
+  - name: Verify SX1278 Silicon Version Register 0x42
+    wait-for: "[SX1278] Module Silicon Version: 0x12 [PASS: VERIFIED]"
+    timeout: 3000
+
+  # STAGE 2: Ultrasonic Flood Threshold Test (d = 35 cm)
+  - name: Set Ultrasonic Distance to 35cm
+    set-control:
+      part: ultrasonic
+      control: distance
+      value: 35
+    wait: 200
+
+  - name: Assert Sump Pump Actuation on PCF8574 Port 0x20
+    wait-for: "CRITICAL_FLOOD"
+    timeout: 2000
+
+  # STAGE 3: Landslide Saturation & Kinematic Shear in Online Mode
+  - name: Inject Saturated Soil (100% / 1.80V)
+    set-control:
+      part: soil
+      control: moisture_pct
+      value: 100
+    wait: 150
+
+  - name: Inject Landslide Shear Dynamics
+    set-control:
+      part: mpu6050
+      control: accelX
+      value: 0.95
+    set-control:
+      part: mpu6050
+      control: accelY
+      value: 1.45
+    wait: 100
+
+  - name: Assert Sub-10ms Direct Safety Relays Actuation
+    wait-for: "[EMERGENCY CUTOFF TRIGGERED]"
+    timeout: 500
+
+  - name: Assert LoRa RF Hex Packet Emission
+    wait-for: "[SX1278-TX]"
+    timeout: 1000
+
+  # STAGE 4: Comms Fault Injection & Offline NVS Buffer Reconciliation
+  - name: Sever Network Connection (Offline Mode)
+    disconnect-wifi: true
+    wait: 300
+
+  - name: Assert Offline Autonomous Edge Operation
+    wait-for: "Autonomous edge mode engaged."
+    timeout: 2000
+
+  - name: Reconnect Network & Assert FIFO Reconciliation
+    connect-wifi: true
+    wait-for: "[MQTT] Connected successfully!"
+    timeout: 3000
+
+  - name: Assert NVS Offline Buffer Flushed
+    wait-for: "[NVS] Reconciled and flushed"
+    timeout: 3000

@@ -1,0 +1,835 @@
+{
+  "version": 1,
+  "author": "Antigravity Embedded Systems Team",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-v1",
+      "id": "esp",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-hc-sr04",
+      "id": "ultrasonic",
+      "top": -240,
+      "left": -320,
+      "attrs": {
+        "distance": "180"
+      }
+    },
+    {
+      "type": "chip-shifter",
+      "id": "shifter",
+      "top": -140,
+      "left": -200,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-mpu6050",
+      "id": "mpu6050",
+      "top": -220,
+      "left": 80,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-pcf8574",
+      "id": "pcf8574",
+      "top": -80,
+      "left": 280,
+      "attrs": {
+        "address": "32"
+      }
+    },
+    {
+      "type": "chip-soil",
+      "id": "soil",
+      "top": 120,
+      "left": -300,
+      "attrs": {
+        "moisture_pct": "22"
+      }
+    },
+    {
+      "type": "chip-sx1278",
+      "id": "sx1278",
+      "top": 160,
+      "left": 260,
+      "attrs": {}
+    },
+    {
+      "type": "chip-max485",
+      "id": "max485",
+      "top": 20,
+      "left": 280,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-relay-module",
+      "id": "relay_safety1",
+      "top": 300,
+      "left": -220,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-relay-module",
+      "id": "relay_safety2",
+      "top": 300,
+      "left": -100,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-relay-module",
+      "id": "relay_latch",
+      "top": 300,
+      "left": 20,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-relay-module",
+      "id": "relay_pump",
+      "top": 300,
+      "left": 140,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-slide-switch",
+      "id": "sw_key",
+      "top": -60,
+      "left": -380,
+      "attrs": {
+        "bounce": "1"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_pullup",
+      "top": -10,
+      "left": -360,
+      "attrs": {
+        "resistance": "10000"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_24v",
+      "top": -340,
+      "left": -140,
+      "attrs": {
+        "color": "amber",
+        "label": "24V RAIL"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_24v",
+      "top": -340,
+      "left": -180,
+      "attrs": {
+        "resistance": "4700"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_5v",
+      "top": -340,
+      "left": -40,
+      "attrs": {
+        "color": "green",
+        "label": "5V BUCK"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_5v",
+      "top": -340,
+      "left": -80,
+      "attrs": {
+        "resistance": "470"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_3v3",
+      "top": -340,
+      "left": 60,
+      "attrs": {
+        "color": "blue",
+        "label": "3.3V LDO"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_3v3",
+      "top": -340,
+      "left": 20,
+      "attrs": {
+        "resistance": "330"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_p0",
+      "top": -160,
+      "left": 400,
+      "attrs": {
+        "color": "blue",
+        "label": "P0 PUMP"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_p1",
+      "top": -130,
+      "left": 400,
+      "attrs": {
+        "color": "blue",
+        "label": "P1 AUX"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_p2",
+      "top": -100,
+      "left": 400,
+      "attrs": {
+        "color": "red",
+        "label": "P2 SIREN"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_p3",
+      "top": -70,
+      "left": 400,
+      "attrs": {
+        "color": "orange",
+        "label": "P3 STROBE"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_p4",
+      "top": -40,
+      "left": 400,
+      "attrs": {
+        "color": "yellow",
+        "label": "P4 FAN"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_p5",
+      "top": -10,
+      "left": 400,
+      "attrs": {
+        "color": "green",
+        "label": "P5 VLV1"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_p6",
+      "top": 20,
+      "left": 400,
+      "attrs": {
+        "color": "green",
+        "label": "P6 VLV2"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_p7",
+      "top": 50,
+      "left": 400,
+      "attrs": {
+        "color": "white",
+        "label": "P7 BCN"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "esp:GND.1",
+      "shifter:GND",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "soil:GND",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "mpu6050:GND",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "pcf8574:GND",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "sx1278:GND",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "max485:GND",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "ultrasonic:GND",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "sw_key:2",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "relay_safety1:GND",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "relay_safety2:GND",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "relay_latch:GND",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "relay_pump:GND",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "led_24v:C",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "led_5v:C",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "led_3v3:C",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "esp:VIN",
+      "ultrasonic:VCC",
+      "red",
+      [
+        "v-30",
+        "h-150"
+      ]
+    ],
+    [
+      "esp:VIN",
+      "max485:VCC",
+      "red",
+      [
+        "v20"
+      ]
+    ],
+    [
+      "esp:VIN",
+      "relay_safety1:VCC",
+      "red",
+      [
+        "v40"
+      ]
+    ],
+    [
+      "esp:VIN",
+      "relay_safety2:VCC",
+      "red",
+      [
+        "v40"
+      ]
+    ],
+    [
+      "esp:VIN",
+      "relay_latch:VCC",
+      "red",
+      [
+        "v40"
+      ]
+    ],
+    [
+      "esp:VIN",
+      "relay_pump:VCC",
+      "red",
+      [
+        "v40"
+      ]
+    ],
+    [
+      "esp:VIN",
+      "r_5v:1",
+      "red",
+      [
+        "v-30"
+      ]
+    ],
+    [
+      "r_5v:2",
+      "led_5v:A",
+      "green",
+      [
+        "h10"
+      ]
+    ],
+    [
+      "esp:3V3",
+      "mpu6050:VCC",
+      "red",
+      [
+        "v-20"
+      ]
+    ],
+    [
+      "esp:3V3",
+      "pcf8574:VCC",
+      "red",
+      [
+        "v-20"
+      ]
+    ],
+    [
+      "esp:3V3",
+      "soil:VCC",
+      "red",
+      [
+        "v20"
+      ]
+    ],
+    [
+      "esp:3V3",
+      "sx1278:VCC",
+      "red",
+      [
+        "v20"
+      ]
+    ],
+    [
+      "esp:3V3",
+      "r_pullup:2",
+      "red",
+      [
+        "v-10"
+      ]
+    ],
+    [
+      "esp:3V3",
+      "r_3v3:1",
+      "red",
+      [
+        "v-30"
+      ]
+    ],
+    [
+      "r_3v3:2",
+      "led_3v3:A",
+      "blue",
+      [
+        "h10"
+      ]
+    ],
+    [
+      "r_24v:2",
+      "led_24v:A",
+      "orange",
+      [
+        "h10"
+      ]
+    ],
+    [
+      "esp:VIN",
+      "r_24v:1",
+      "orange",
+      [
+        "v-40"
+      ]
+    ],
+    [
+      "esp:D27",
+      "ultrasonic:TRIG",
+      "blue",
+      [
+        "v-80",
+        "h-80"
+      ]
+    ],
+    [
+      "ultrasonic:ECHO",
+      "shifter:IN_5V",
+      "orange",
+      [
+        "v20"
+      ]
+    ],
+    [
+      "shifter:OUT_3V3",
+      "esp:D35",
+      "green",
+      [
+        "v40"
+      ]
+    ],
+    [
+      "esp:D21",
+      "mpu6050:SDA",
+      "cyan",
+      [
+        "v-40"
+      ]
+    ],
+    [
+      "esp:D21",
+      "pcf8574:SDA",
+      "cyan",
+      [
+        "v-40",
+        "h120"
+      ]
+    ],
+    [
+      "esp:D22",
+      "mpu6050:SCL",
+      "gold",
+      [
+        "v-50"
+      ]
+    ],
+    [
+      "esp:D22",
+      "pcf8574:SCL",
+      "gold",
+      [
+        "v-50",
+        "h120"
+      ]
+    ],
+    [
+      "soil:AOUT",
+      "esp:D34",
+      "purple",
+      [
+        "h80"
+      ]
+    ],
+    [
+      "esp:D18",
+      "sx1278:SCK",
+      "gray",
+      [
+        "v30"
+      ]
+    ],
+    [
+      "esp:D19",
+      "sx1278:MISO",
+      "yellow",
+      [
+        "v40"
+      ]
+    ],
+    [
+      "esp:D23",
+      "sx1278:MOSI",
+      "white",
+      [
+        "v50"
+      ]
+    ],
+    [
+      "esp:D5",
+      "sx1278:NSS",
+      "magenta",
+      [
+        "v60"
+      ]
+    ],
+    [
+      "esp:D14",
+      "sx1278:RST",
+      "brown",
+      [
+        "v70"
+      ]
+    ],
+    [
+      "esp:D26",
+      "sx1278:DIO0",
+      "pink",
+      [
+        "v80"
+      ]
+    ],
+    [
+      "esp:D13",
+      "sx1278:DIO1",
+      "violet",
+      [
+        "v90"
+      ]
+    ],
+    [
+      "esp:D16",
+      "max485:RO",
+      "green",
+      [
+        "h40"
+      ]
+    ],
+    [
+      "esp:D17",
+      "max485:DI",
+      "blue",
+      [
+        "h50"
+      ]
+    ],
+    [
+      "esp:D4",
+      "max485:RE_DE",
+      "orange",
+      [
+        "h60"
+      ]
+    ],
+    [
+      "esp:D25",
+      "relay_safety1:IN",
+      "red",
+      [
+        "v100"
+      ]
+    ],
+    [
+      "esp:D32",
+      "relay_safety2:IN",
+      "red",
+      [
+        "v110"
+      ]
+    ],
+    [
+      "esp:D33",
+      "relay_latch:IN",
+      "red",
+      [
+        "v120"
+      ]
+    ],
+    [
+      "pcf8574:P0",
+      "relay_pump:IN",
+      "cyan",
+      [
+        "v140"
+      ]
+    ],
+    [
+      "pcf8574:P0",
+      "led_p0:A",
+      "cyan",
+      [
+        "h60"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "led_p0:C",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "pcf8574:P1",
+      "led_p1:A",
+      "cyan",
+      [
+        "h60"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "led_p1:C",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "pcf8574:P2",
+      "led_p2:A",
+      "red",
+      [
+        "h60"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "led_p2:C",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "pcf8574:P3",
+      "led_p3:A",
+      "orange",
+      [
+        "h60"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "led_p3:C",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "pcf8574:P4",
+      "led_p4:A",
+      "yellow",
+      [
+        "h60"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "led_p4:C",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "pcf8574:P5",
+      "led_p5:A",
+      "green",
+      [
+        "h60"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "led_p5:C",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "pcf8574:P6",
+      "led_p6:A",
+      "green",
+      [
+        "h60"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "led_p6:C",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "pcf8574:P7",
+      "led_p7:A",
+      "white",
+      [
+        "h60"
+      ]
+    ],
+    [
+      "esp:GND.1",
+      "led_p7:C",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "esp:VN",
+      "sw_key:1",
+      "blue",
+      [
+        "h-80"
+      ]
+    ],
+    [
+      "esp:VN",
+      "r_pullup:1",
+      "blue",
+      [
+        "h-80"
+      ]
+    ]
+  ],
+  "dependencies": {}
+}

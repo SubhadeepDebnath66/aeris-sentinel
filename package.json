@@ -1,8 +1,10 @@
 {
-  "name": "ares-sih2026-simulation",
+  "name": "tx100-probe-digital-twin",
   "private": true,
   "type": "module",
   "scripts": {
+    "start": "python server.py",
+    "bundle": "python build_standalone.py",
     "test": "node --test"
   }
 }
